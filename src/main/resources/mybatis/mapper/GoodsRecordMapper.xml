@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qyt.material.mapper.GoodsRecordMapper">
+
+    <select id="selectGoodsRecord" resultType="com.qyt.material.pojo.GoodsRecord">
+        select * from goods_record
+        <where>
+            <if test="goodsRecordNum != null">
+                and goods_record_num like concat('%',#{goodsRecordNum},'%')
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="startTime != null and endTime != null">
+                and create_time between #{startTime} and #{endTime}
+            </if>
+            and uid = #{uid}
+            and status != -1 and status != 2
+        </where>
+        order by
+        (case status
+        when 1 then 1
+        when 0 then 2
+        else 3
+        end),create_time desc
+    </select>
+
+    <update id="removeRecord">
+        update goods_record
+        set status = 0
+        where id = #{id}
+    </update>
+
+    <update id="deleteGoodsRecord">
+        update goods_record
+        set status = -1
+        where id = #{id}
+    </update>
+
+    <select id="detailGoodsRecord" resultType="com.qyt.material.vo.GoodsDetailInfoVo">
+        select address, name, phone, create_time
+        from goods_record
+        where id = #{id}
+    </select>
+
+    <select id="detailGoodsRecordItems" resultType="com.qyt.material.vo.GoodsDetailItemsVo">
+        select c.id,
+               c.goods_name,
+               c.goods_num,
+               b.number,
+               c.unit,
+               c.specification,
+               c.img_url,
+               d.goods_category_name
+        from goods_record a
+                 join goods_donation_info b on a.goods_record_num = b.goods_record_num
+                 join goods c on b.goods_num = c.goods_num
+                 join goods_category d on c.goods_category_id = d.id
+        where b.goods_record_num = #{goodsRecordNum}
+    </select>
+</mapper>

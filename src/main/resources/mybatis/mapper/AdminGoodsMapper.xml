@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qyt.material.mapper.AdminGoodsMapper">
+    <select id="getNotAuditGoods" resultType="com.qyt.material.vo.AdminGoodsVo">
+        select g.id,
+        g.goods_name,
+        g.goods_num,
+        g.specification,
+        g.unit,
+        g.amount,
+        g.img_url,
+        g.goods_category_id,
+        gc.goods_category_name,
+        g.create_time,
+        g.modified_time,
+        g.status,
+        g.remark,
+        g.uid,
+        u.username,
+        u.real_name
+        from goods g left join goods_category gc on g.goods_category_id = gc.id left join user u on u.uid = g.uid
+        <where>
+            <if test="goodsCategoryId != null ">
+                g.goods_category_id = #{goodsCategoryId}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                and g.goods_name like concat('%',#{goodsName},'%')
+            </if>
+            <if test="goodsNum != null and goodsNum != ''">
+                and g.goods_num = #{goodsNum}
+            </if>
+            and g.status = 2 or g.status = 3 or g.status = 1
+            order by
+            (case g.status
+            when 2 then 1
+            when 3 then 2
+            else 3
+            end)
+        </where>
+    </select>
+
+    <update id="passGoodsAudit">
+        update goods
+        set status        = 3,
+            modified_time = #{modifiedTime}
+        where id = #{id}
+    </update>
+
+    <update id="notPassGoodsAudit">
+        update goods
+        set status        = 1,
+            modified_time = #{modifiedTime}
+        where id = #{id}
+    </update>
+
+    <update id="backGoodsAudit">
+        update goods
+        set status        = 2,
+            modified_time = #{modifiedTime}
+        where id = #{id}
+    </update>
+
+    <update id="deleteGoodsAudit">
+        update goods
+        set status        = -1,
+            modified_time = #{modifiedTime}
+        where id = #{id}
+    </update>
+
+
+    <select id="getDonationInfo" resultType="com.qyt.material.vo.AdminDonationInfoVo">
+        select * from goods_record
+        <where>
+            <if test="goodsRecordNum != null">
+                and goods_record_num like concat('%',#{goodsRecordNum},'%')
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="startTime != null and endTime != null">
+                and create_time between #{startTime} and #{endTime}
+            </if>
+            and status != -1
+        </where>
+        order by
+        (case status
+        when 1 then 1
+        when 2 then 2
+        else 3
+        end),create_time desc
+    </select>
+
+    <select id="instockDetailInfo" resultType="com.qyt.material.vo.GoodsVo">
+        select c.id,
+               c.goods_name,
+               c.goods_num,
+               c.specification,
+               c.unit,
+               b.number as amount,
+               c.img_url,
+               c.goods_category_id,
+               c.create_time,
+               c.modified_time,
+               c.status,
+               c.remark,
+               d.goods_category_name
+        from goods_record a
+                 join goods_donation_info b on a.goods_record_num = b.goods_record_num
+                 join goods c on b.goods_num = c.goods_num
+                 join goods_category d on c.goods_category_id = d.id
+        where b.goods_record_num = #{goodsRecordNum}
+    </select>
+
+    <insert id="insertStock">
+        insert into goods_stock (goods_name, specification, unit, amount, img_url, goods_category_id,
+                                 goods_category_name,
+                                 create_time, status, remark, uid, goods_record_num, goods_instock_num)
+        values (#{goodsName}, #{specification}, #{unit}, #{amount}, #{imgUrl}, #{goodsCategoryId}, #{goodsCategoryName},
+                #{createTime}, #{status}, #{remark}, #{uid}, #{goodsRecordNum}, #{goodsInstockNum})
+    </insert>
+
+    <update id="updateInstockStatus">
+        update goods_record
+        set status = 2
+        where goods_record_num = #{goodsRecordNum}
+    </update>
+</mapper>

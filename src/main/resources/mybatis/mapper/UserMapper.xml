@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qyt.material.mapper.UserMapper">
+    <resultMap id="userBaseMap" type="com.qyt.material.pojo.User">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result property="username" column="username" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="password" column="password" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="nickname" column="nickname" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="avatar" column="avatar" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="realName" javaType="java.lang.String" column="real_name" jdbcType="VARCHAR"/>
+        <result property="email" javaType="java.lang.String" column="email" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="identity" column="identity" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="birthday" javaType="java.lang.String" column="birthday" jdbcType="VARCHAR"/>
+        <result property="address" column="address" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="modifiedTime" column="modified_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="type" column="type" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="uid" column="uid" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="detailAddress" column="detail_address" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="verified" column="verified" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="description" column="description" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="addressLabel" column="address_label" javaType="java.lang.String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--    <insert id="register">-->
+    <!--        insert into user(username, password, nickname, avatar, sex, real_name, email, phone, identity, birthday,-->
+    <!--                         address, create_time, modified_time, status, type, uid)-->
+    <!--        values (#{username}, #{password}, #{nickname}, #{avatar}, #{sex}, #{real_name}, #{email}, #{phone},-->
+    <!--                #{identity}, #{birthday}, #{address}, #{create_time}, #{modified_time}, #{status}, #{type}, #{uid})-->
+    <!--    </insert>-->
+
+    <select id="selectByName" resultMap="userBaseMap">
+        select id,
+               username,
+               password,
+               nickname,
+               avatar,
+               sex,
+               real_name,
+               email,
+               phone,
+               identity,
+               birthday,
+               address,
+               create_time,
+               modified_time,
+               status,
+               type,
+               uid,
+               detail_address,
+               verified,
+               description
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="selectByNameAndPwd" resultMap="userBaseMap">
+        select id,
+               username,
+               password,
+               nickname,
+               avatar,
+               sex,
+               real_name,
+               email,
+               phone,
+               identity,
+               birthday,
+               address,
+               create_time,
+               modified_time,
+               status,
+               type,
+               uid,
+               detail_address,
+               verified,
+               description
+        from user
+        where username = #{username}
+          and password = #{password}
+    </select>
+
+    <select id="selectByUid" resultMap="userBaseMap">
+        select id,
+               username,
+               password,
+               nickname,
+               avatar,
+               sex,
+               real_name,
+               email,
+               phone,
+               identity,
+               birthday,
+               address,
+               create_time,
+               modified_time,
+               status,
+               type,
+               uid,
+               detail_address,
+               verified,
+               description,
+               address_label
+        from user
+        where uid = #{uid}
+    </select>
+
+
+    <update id="updatePassword">
+        update user
+        set password = #{password}
+        where uid = #{uid}
+    </update>
+
+    <update id="updateBindEmail">
+        update user
+        set email = #{email}
+        where uid = #{uid}
+    </update>
+
+    <delete id="cancelAccount">
+        delete
+        from user
+        where uid = #{uid}
+    </delete>
+</mapper>

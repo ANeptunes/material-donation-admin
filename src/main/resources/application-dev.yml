@@ -1,0 +1,89 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://127.0.0.1:3306/material-donation?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=CTT
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 500
+        min-idle: 0
+    lettuce:
+      shutdown-timeout: 0
+
+  mail:
+    # 邮件服务地址
+    host: smtp.qq.com
+    # 编码格式
+    default-encoding: utf-8
+    # 用户名
+    username: 1498768337@qq.com
+    from: 1498768337@qq.com
+    # 授权码，就是我们刚才准备工作获取的代码
+    password: nfukrbkjcwcmijbi
+    # 其它参数
+    protocol: smtp
+    properties:
+      smtp:
+        # 如果是用 SSL 方式，需要配置如下属性,使用qq邮箱的话需要开启
+        ssl:
+        enable: true
+        required: true
+        # 邮件接收时间的限制，单位毫秒
+        timeout: 10000
+        # 连接时间的限制，单位毫秒
+        connectiontimeout: 10000
+        # 邮件发送时间的限制，单位毫秒
+        writetimeout: 10000
+
+  servlet:
+    multipart:
+      enabled: true #是否启用http上传处理
+      max-request-size: 100MB #最大请求文件的大小
+      max-file-size: 20MB #设置单个文件最大长度
+      file-size-threshold: 20MB #当文件达到多少时进行磁盘写入
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-aliases-package:
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    root: info
+    com.qyt.material: debug
+  file:
+    path: log/log-dev/
+
+fdfs:
+  resHost: 8.142.42.56
+  storagePort: 80
+  connect-timeout: 1000
+  so-timeout: 1500
+  trackerList: 8.142.42.56:22122
+  thumbImage:
+    width: 100
+    height: 100
+  pool:
+    max-total: 500
+    max-wait-millis: 2000

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qyt.material.mapper.GoodsMapper">
+
+    <select id="findGoodsCategoryList" resultType="com.qyt.material.pojo.GoodsCategory">
+        select id, goods_category_name, remark, create_time, modified_time
+        from goods_category
+    </select>
+
+    <select id="findGoodsList" resultType="com.qyt.material.vo.GoodsVo">
+        select g.id,
+        g.goods_name,
+        g.goods_num,
+        g.specification,
+        g.unit,
+        g.amount,
+        g.img_url,
+        g.goods_category_id,
+        gc.goods_category_name,
+        g.create_time,
+        g.modified_time,
+        g.status,
+        g.remark,
+        g.uid
+        from goods g left join goods_category gc on g.goods_category_id = gc.id
+        <where>
+            <if test="goodsCategoryId != null ">
+                g.goods_category_id = #{goodsCategoryId}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                and g.goods_name like concat('%',#{goodsName},'%')
+            </if>
+            <if test="status != null">
+                and g.status = #{status}
+            </if>
+            and g.uid = #{uid}
+            and status != -1
+        </where>
+        order by g.status desc
+    </select>
+
+    <select id="getEditGoods" resultType="com.qyt.material.vo.GoodsVo">
+        select *
+        from goods
+        where id = #{id}
+    </select>
+
+    <update id="updateGoodsById">
+        update goods
+        set goods_name       = #{goodsName},
+            specification    = #{specification},
+            unit             = #{unit},
+            amount=#{amount},
+            img_url          = #{imgUrl},
+            goods_category_id=#{goodsCategoryId},
+            modified_time    = #{modifiedTime},
+            remark           = #{remark}
+        where id = #{id}
+    </update>
+
+    <update id="removeGoods">
+        update goods
+        set status = 0
+        where id = #{id}
+    </update>
+
+    <update id="backGoods">
+        update goods
+        set status = 2
+        where id = #{id}
+    </update>
+
+    <update id="deleteGoods">
+        update goods
+        set status = -1
+        where id = #{id}
+    </update>
+
+    <select id="getShowGoods" resultType="com.qyt.material.vo.GoodsVo">
+        select g.id,
+               g.goods_name,
+               g.goods_num,
+               g.specification,
+               g.unit,
+               g.amount,
+               g.img_url,
+               g.goods_category_id,
+               gc.goods_category_name,
+               g.create_time,
+               g.modified_time,
+               g.status,
+               g.remark,
+               g.uid
+        from goods g
+                 left join goods_category gc on g.goods_category_id = gc.id
+        where g.id = #{goodsId}
+    </select>
+
+    <select id="statisticsGoods" resultType="com.qyt.material.vo.GoodsVo">
+        select g.id,
+               g.goods_name,
+               g.goods_num,
+               g.specification,
+               g.unit,
+               g.amount,
+               g.img_url,
+               g.goods_category_id,
+               g.create_time,
+               g.modified_time,
+               g.status,
+               g.remark
+        from goods g
+        where g.uid = #{uid}
+          and status != -1
+    </select>
+
+</mapper>
